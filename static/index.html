@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning OS 🎹</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#e8f5ef; --surface:#ffffff;
+    --mint:#6ec99a; --mint-dark:#3fa870; --mint-light:#b8e8cf; --mint-bg:#e4f7ee;
+    --purple:#9b7fd4; --purple-dark:#7a5cb8; --purple-light:#d4c4f5; --purple-bg:#ede5ff;
+    --yellow:#f5d446; --yellow-dark:#c9a800; --yellow-light:#faeea0; --yellow-bg:#fffbe6;
+    --blue:#7bc8f7; --blue-dark:#4a9ad0; --blue-bg:rgba(200,235,255,0.35);
+    --pink:#f5a0c8; --pink-dark:#c06090; --pink-bg:#fff0f6;
+    --sky:#90c8f0; --sky-dark:#4a80b8; --sky-bg:#e8f5ff;
+    --text:#2a3828; --muted:#7a9e8a; --border:rgba(110,201,154,0.35);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--bg); color:var(--text);
+    font-family:'Quicksand',sans-serif; min-height:100vh;
+    background-image: radial-gradient(circle, rgba(110,201,154,0.18) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+  }
+  .wrap { max-width:1380px; margin:0 auto; padding:32px 36px 56px; }
+
+  /* Header */
+  header { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
+  .logo { display:flex; align-items:center; gap:14px; }
+  .logo-key {
+    width:54px; height:54px;
+    background:linear-gradient(145deg,var(--purple),var(--purple-dark));
+    border-radius:16px; display:flex; align-items:center; justify-content:center;
+    font-size:26px; box-shadow:0 4px 0 #5a3d96, 0 8px 20px rgba(155,127,212,0.3);
+    animation:floatKey 3.5s ease-in-out infinite;
+  }
+  .logo-title {
+    font-family:'Nunito',sans-serif; font-size:26px; font-weight:900;
+    background:linear-gradient(135deg,var(--mint-dark),var(--purple));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .logo-sub { font-size:11px; color:var(--muted); font-weight:700; }
+  .header-right { display:flex; gap:12px; align-items:center; }
+  .date-pill {
+    background:#fff; border:2px solid var(--border); border-radius:12px;
+    padding:10px 18px; font-size:13px; font-weight:700;
+    box-shadow:0 3px 0 var(--mint-light); display:flex; align-items:center; gap:8px;
+  }
+  .date-dot { width:7px; height:7px; border-radius:50%; background:var(--mint); }
+  .sync-btn {
+    background:linear-gradient(145deg,var(--mint),var(--mint-dark));
+    border:none; border-radius:12px; padding:10px 20px;
+    font-family:'Nunito',sans-serif; font-size:13px; font-weight:800; color:#fff;
+    cursor:pointer; box-shadow:0 4px 0 var(--mint-dark);
+    transition:transform .1s, box-shadow .1s;
+  }
+  .sync-btn:hover { transform:translateY(-2px); }
+  .sync-btn:active { transform:translateY(3px); box-shadow:0 1px 0 var(--mint-dark); }
+  .sync-btn:disabled { opacity:.6; cursor:not-allowed; }
+
+  /* Loading */
+  .loading {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; min-height:60vh; gap:16px;
+  }
+  .loading-emoji { font-size:52px; animation:spin 1.5s linear infinite; }
+  .loading-text { font-family:'Nunito',sans-serif; font-size:18px; font-weight:800; color:var(--muted); }
+
+  /* Error */
+  .error-card {
+    background:#fff; border:2px solid #f5c4dc; border-radius:20px;
+    padding:28px; text-align:center; max-width:500px; margin:40px auto;
+    box-shadow:0 4px 0 #f0b8d4;
+  }
+  .error-card h3 { font-family:'Nunito',sans-serif; font-size:18px; font-weight:900; color:var(--pink-dark); margin-bottom:8px; }
+  .error-card p { font-size:12px; color:var(--muted); font-weight:600; }
+
+  /* Priority Banner */
+  .banner {
+    background:linear-gradient(135deg,#fff 60%,var(--purple-bg));
+    border:2px solid var(--purple-light); border-radius:26px;
+    padding:24px 32px; margin-bottom:24px;
+    display:flex; align-items:center; gap:22px;
+    position:relative; overflow:hidden;
+    box-shadow:0 4px 0 var(--purple-light), 0 10px 28px rgba(155,127,212,0.15);
+  }
+  .banner-deco { position:absolute; right:-10px; top:-20px; font-size:140px; opacity:.06; pointer-events:none; }
+  .banner-icon {
+    width:58px; height:58px; flex-shrink:0;
+    background:linear-gradient(145deg,var(--blue),#5aabee); border-radius:18px;
+    display:flex; align-items:center; justify-content:center; font-size:28px;
+    box-shadow:0 4px 0 #4090cc;
+  }
+  .priority-tag {
+    display:inline-block;
+    background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+    color:#fff; font-family:'Nunito',sans-serif; font-size:11px; font-weight:800;
+    letter-spacing:.08em; text-transform:uppercase;
+    padding:5px 14px; border-radius:100px; margin-bottom:8px;
+  }
+  .banner-title { font-family:'Nunito',sans-serif; font-size:20px; font-weight:900; margin-bottom:4px; }
+  .banner-sub { font-size:12px; color:var(--muted); font-weight:600; }
+  .banner-prog { flex:1; max-width:220px; }
+  .banner-prog-meta { display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:8px; }
+  .banner-prog-meta b { font-family:'Nunito',sans-serif; font-size:18px; font-weight:900; color:var(--blue-dark); }
+  .countdown {
+    margin-left:auto; flex-shrink:0;
+    background:linear-gradient(145deg,var(--blue),#5aabee);
+    border-radius:20px; padding:18px 28px; text-align:center;
+    box-shadow:0 5px 0 #3a80bb;
+  }
+  .countdown-num { font-family:'Nunito',sans-serif; font-size:44px; font-weight:900; color:#fff; line-height:1; }
+  .countdown-lbl { font-size:11px; color:rgba(255,255,255,.85); font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+
+  /* Stats */
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+  .stat {
+    background:#fff; border:2px solid; border-radius:20px; padding:18px 20px;
+    display:flex; align-items:center; gap:14px;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .stat:hover { transform:translateY(-4px) scale(1.02); }
+  .stat-icon { width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .stat-num { font-family:'Nunito',sans-serif; font-size:32px; font-weight:900; line-height:1; }
+  .stat-label { font-size:11px; color:var(--muted); font-weight:700; margin-top:2px; }
+
+  /* Courses Grid */
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:22px; }
+  .card {
+    background:#fff; border:2px solid; border-radius:24px; padding:24px;
+    position:relative; overflow:hidden; display:flex; flex-direction:column;
+    transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s;
+  }
+  .card:hover { transform:translateY(-5px) scale(1.014); }
+  .card.featured { grid-column:span 2; }
+  .card-deco { position:absolute; right:-8px; top:-8px; font-size:70px; opacity:.07; pointer-events:none; line-height:1; }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:13px; gap:10px; }
+  .provider { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:5px 13px; border-radius:100px; border:1.5px solid; }
+  .status-chip { font-size:10px; font-weight:800; padding:5px 13px; border-radius:100px; border:1.5px solid; display:flex; align-items:center; gap:5px; white-space:nowrap; }
+  .status-chip::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+  .chip-active { color:var(--mint-dark); border-color:var(--mint-light); background:var(--mint-bg); }
+  .chip-urgent { color:var(--purple-dark); border-color:var(--purple-light); background:var(--purple-bg); animation:heartbeat 1.6s ease infinite; }
+  .card h2 { font-family:'Nunito',sans-serif; font-size:16px; font-weight:900; line-height:1.35; margin-bottom:5px; }
+  .cur-mod { font-size:11.5px; color:var(--muted); font-weight:600; margin-bottom:14px; line-height:1.5; }
+  .cur-mod em { font-style:normal; color:var(--text); opacity:.75; }
+  .prog-wrap { margin-top:auto; }
+  .prog-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+  .prog-lbl { font-size:11px; color:var(--muted); font-weight:600; }
+  .prog-pct { font-family:'Nunito',sans-serif; font-size:21px; font-weight:900; }
+  .track { height:11px; background:var(--bg); border-radius:100px; overflow:visible; position:relative; margin-bottom:9px; }
+  .fill { height:100%; border-radius:100px; position:relative; transition:width 1.3s cubic-bezier(.16,1,.3,1); }
+  .ball {
+    position:absolute; right:-6px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; border-radius:50%; background:inherit;
+    border:2.5px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.15);
+    display:flex; align-items:center; justify-content:center; font-size:8px;
+  }
+  .dl-tag { font-size:11px; color:var(--muted); font-weight:600; }
+  .dl-tag strong { color:var(--text); }
+  .dl-tag.overdue { color:#c06060; }
+
+  /* Track bar (banner) */
+  .track-bar { height:10px; background:rgba(0,0,0,.06); border-radius:100px; overflow:hidden; margin-bottom:9px; }
+  .track-fill { height:100%; border-radius:100px; transition:width 1.3s cubic-bezier(.16,1,.3,1); }
+
+  @keyframes floatKey { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-8px) rotate(3deg)} }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  @keyframes popIn { from{opacity:0;transform:scale(.94) translateY(12px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .pop { animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">
+      <div class="logo-key">🎹</div>
+      <div>
+        <div class="logo-title">Learning OS</div>
+        <div class="logo-sub">POP Keys Edition ✨</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="date-pill">
+        <div class="date-dot"></div>
+        <span id="dateDisplay"></span>
+      </div>
+      <button class="sync-btn" onclick="loadData()" id="syncBtn">🔄 Sync</button>
+    </div>
+  </header>
+
+  <div id="app"></div>
+
+</div>
+
+<script>
+const PROVIDER = {
+  "Microsoft":      { color:"#4a9ad0", border:"rgba(123,200,247,0.5)", bg:"rgba(200,235,255,0.35)", fill:"linear-gradient(90deg,#7bc8f7,#b0deff)", emoji:"☁️" },
+  "Google":         { color:"#3fa870", border:"#b8e8cf", bg:"#e4f7ee", fill:"linear-gradient(90deg,#6ec99a,#a8f0d8)", emoji:"📊" },
+  "Google Cloud":   { color:"#7a5cb8", border:"#d4c4f5", bg:"#ede5ff", fill:"linear-gradient(90deg,#9b7fd4,#c8b4f8)", emoji:"🤖" },
+  "SAP":            { color:"#c9a800", border:"#faeea0", bg:"#fffbe6", fill:"linear-gradient(90deg,#f5d446,#faeea0)", emoji:"⚙️" },
+  "IBM":            { color:"#c06090", border:"#f5c4dc", bg:"#fff0f6", fill:"linear-gradient(90deg,#f5a0c8,#ffd4e8)", emoji:"🧠" },
+  "Duke University":{ color:"#4a80b8", border:"#b8dff8", bg:"#e8f5ff", fill:"linear-gradient(90deg,#90c8f0,#c8e8ff)", emoji:"🔢" },
+};
+
+function daysUntil(d) {
+  if (!d) return null;
+  return Math.ceil((new Date(d) - new Date()) / 86400000);
+}
+function fmtDate(d) {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("de-DE", {day:"numeric", month:"short", year:"numeric"});
+}
+
+// Set date
+document.getElementById("dateDisplay").textContent =
+  new Date().toLocaleDateString("de-DE", {weekday:"short", day:"numeric", month:"long", year:"numeric"});
+
+async function loadData() {
+  const btn = document.getElementById("syncBtn");
+  btn.disabled = true; btn.textContent = "⏳ Lädt...";
+  const app = document.getElementById("app");
+
+  try {
+    const res = await fetch("/api/kurse");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { kurse } = await res.json();
+    renderDashboard(kurse);
+  } catch(e) {
+    app.innerHTML = `
+      <div class="error-card">
+        <h3>😅 Verbindungsfehler</h3>
+        <p>${e.message}</p>
+        <button class="sync-btn" style="margin:16px auto 0" onclick="loadData()">Nochmal 🔄</button>
+      </div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "🔄 Sync";
+  }
+}
+
+function renderDashboard(kurse) {
+  const app = document.getElementById("app");
+  const prio = kurse.find(k => k.priorität === "🎯 Hoch") || kurse[0];
+  const days = daysUntil(prio?.deadline);
+  const avgPct = Math.round(kurse.reduce((a,k) => a + k.fortschritt, 0) / kurse.length * 100);
+
+  app.innerHTML = `
+    <!-- BANNER -->
+    <div class="banner pop">
+      <div class="banner-deco">☁️</div>
+      <div class="banner-icon">${PROVIDER[prio.anbieter]?.emoji || "📚"}</div>
+      <div>
+        <div class="priority-tag">🎯 Priorität #1</div>
+        <div class="banner-title">${prio.name}</div>
+        <div class="banner-sub">${prio.aktuell || ""}</div>
+      </div>
+      <div class="banner-prog">
+        <div class="banner-prog-meta"><span>Fortschritt</span><b>${Math.round(prio.fortschritt*100)}%</b></div>
+        <div class="track-bar"><div class="track-fill" style="width:${prio.fortschritt*100}%;background:linear-gradient(90deg,#7bc8f7,#b0deff)"></div></div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600">${prio.abgeschlossen} von ${prio.gesamt} Kursen ✨</div>
+      </div>
+      <div class="countdown">
+        <div class="countdown-num">${days > 0 ? days : 0}</div>
+        <div class="countdown-lbl">Tage 🌸</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats pop">
+      <div class="stat" style="border-color:var(--mint-light);box-shadow:0 4px 0 var(--mint-light)">
+        <div class="stat-icon" style="background:var(--mint-bg)">🏅</div>
+        <div><div class="stat-num" style="color:var(--mint-dark)">${kurse.filter(k=>k.status==="✅ Abgeschlossen").length}</div><div class="stat-label">Zertifikate</div></div>
+      </div>
+      <div class="stat" style="border-color:var(--purple-light);box-shadow:0 4px 0 var(--purple-light)">
+        <div class="stat-icon" style="background:var(--purple-bg)">📚</div>
+        <div><div class="stat-num" style="color:var(--purple-dark)">${kurse.length}</div><div class="stat-label">Lernpfade</div></div>
+      </div>
+      <div class="stat" style="border-color:var(--yellow-light);box-shadow:0 4px 0 var(--yellow-light)">
+        <div class="stat-icon" style="background:var(--yellow-bg)">⭐</div>
+        <div><div class="stat-num" style="color:var(--yellow-dark)">${avgPct}%</div><div class="stat-label">Ø Fortschritt</div></div>
+      </div>
+      <div class="stat" style="border-color:#e0e0d8;box-shadow:0 4px 0 #d0d0c8">
+        <div class="stat-icon" style="background:#f0f0ec">⏰</div>
+        <div><div class="stat-num" style="color:#888">${kurse.filter(k=>daysUntil(k.deadline)<3 && k.status!=="✅ Abgeschlossen").length}</div><div class="stat-label">Bald fällig</div></div>
+      </div>
+    </div>
+
+    <!-- COURSES -->
+    <div class="grid">
+      ${kurse.map((k, i) => {
+        const p = PROVIDER[k.anbieter] || PROVIDER["Google"];
+        const feat = k.priorität === "🎯 Hoch";
+        const d = daysUntil(k.deadline);
+        const overdue = d !== null && d < 0;
+        return `
+        <div class="card pop ${feat?"featured":""}" style="border-color:${p.border};box-shadow:0 4px 0 ${p.border};animation-delay:${0.28+i*.05}s">
+          <div class="card-deco">${p.emoji}</div>
+          <div class="card-top">
+            <div class="provider" style="color:${p.color};border-color:${p.border};background:${p.bg}">${k.anbieter}</div>
+            <div class="status-chip ${overdue?"chip-urgent":"chip-active"}">${overdue?"⚡ Überfällig":k.status}</div>
+          </div>
+          <h2>${p.emoji} ${k.name}</h2>
+          ${k.aktuell ? `<div class="cur-mod">Aktuell: <em>${k.aktuell}</em></div>` : ""}
+          <div class="prog-wrap">
+            <div class="prog-meta">
+              <div class="prog-lbl">${k.abgeschlossen}/${k.gesamt} Kurse ✨</div>
+              <div class="prog-pct" style="color:${p.color}">${Math.round(k.fortschritt*100)}%</div>
+            </div>
+            <div class="track">
+              <div class="fill" style="width:${k.fortschritt*100}%;background:${p.fill}">
+                <div class="ball">${p.emoji}</div>
+              </div>
+            </div>
+            <div class="dl-tag ${overdue?"overdue":""}">
+              ${overdue?"⚠️":"Deadline:"} <strong>${fmtDate(k.deadline)}</strong>
+              ${d !== null && d >= 0 ? ` (${d} Tage)` : ""}
+            </div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+loadData();
+</script>
+</body>
+</html>
