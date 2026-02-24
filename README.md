@@ -8,6 +8,9 @@
 ![Google Sheets](https://img.shields.io/badge/Google%20Sheets-Backend-34A853?style=flat-square&logo=googlesheets&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
+<img width="width="700"" height="350" alt="image" src="https://github.com/user-attachments/assets/1b0d568a-7bba-48cf-9ef4-eda02347e580" />
+
+
 ---
 
 ## ✨ What is Learning OS?
