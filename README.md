@@ -1,6 +1,6 @@
 # 🎹 Learning OS — POP Keys Edition
 
-> Ein persönliches Lern-Dashboard das parallele Zertifizierungsprogramme trackt, Fortschritte automatisch berechnet und auf allen Geräten läuft.
+> A personal learning dashboard that tracks parallel certification programs, calculates progress automatically, and works on any device.
 
 ![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.132-009688?style=flat-square&logo=fastapi&logoColor=white)
@@ -9,165 +9,165 @@
 
 ---
 
-## ✨ Was ist Learning OS?
+## ✨ What is Learning OS?
 
-Learning OS ist ein selbst gehostetes Web-Dashboard für Menschen die mehrere Zertifizierungen parallel verfolgen. Statt Fortschritte manuell einzutragen, genügt es ein Modul in Google Sheets auf ✅ zu setzen — alles andere berechnet sich automatisch.
+Learning OS is a self-hosted web dashboard for people juggling multiple certifications at once. Instead of manually updating progress percentages, you simply mark a module as ✅ in Google Sheets — everything else calculates itself automatically.
 
-Das Dashboard läuft im Browser, ist auf allen Geräten erreichbar und braucht keine Datenbank, kein Framework-Setup und keinen bezahlten Service.
+The dashboard runs in any browser, is accessible on all devices, and requires no database setup, no paid services, and no complex configuration.
 
 ---
 
-## 🖥️ Architektur
+## 🖥️ Architecture
 
 ```
-Browser (Mac / iPhone / Windows / egal)
+Browser (Mac / iPhone / Windows / any device)
          ↓
-  POP-Keys Dashboard (localhost oder Railway)
+  POP-Keys Dashboard (localhost or Railway)
          ↓
   Python FastAPI Backend
          ↓
-  Google Sheets (öffentlich lesbar)
+  Google Sheets (publicly readable)
 ```
 
 ---
 
 ## 🎯 Features
 
-- **Automatische Fortschrittsberechnung** — Module auf ✅ setzen, Prozent berechnet sich selbst per COUNTIF-Formel
-- **Live Sync** — Dashboard lädt immer aktuelle Daten aus Google Sheets
-- **Deadline Countdown** — Tage bis zur nächsten Prüfung live berechnet
-- **Prioritätssystem** — Höchste Priorität wird als Banner hervorgehoben
-- **Überfällige Kurse** werden automatisch markiert
-- **Responsive** — funktioniert auf jedem Gerät im Browser
-- **Komplett kostenlos** — Google Sheets + FastAPI + Railway Free Tier = 0€/Monat
+- **Automatic progress calculation** — mark a module ✅, the percentage updates itself via COUNTIF formula
+- **Live sync** — dashboard always loads fresh data from Google Sheets
+- **Deadline countdown** — days until next exam calculated live
+- **Priority system** — highest priority course highlighted as a banner
+- **Overdue detection** — overdue courses are automatically flagged
+- **Responsive** — works on any device in the browser
+- **Completely free** — Google Sheets + FastAPI + Railway Free Tier = €0/month
 
 ---
 
-## 🗂️ Projektstruktur
+## 🗂️ Project Structure
 
 ```
 learning-os/
-├── main.py              # FastAPI Backend — liest Google Sheets, liefert JSON
-├── requirements.txt     # Python Abhängigkeiten
-├── Procfile             # Railway Deployment Konfiguration
-├── .env                 # 🔒 Nicht auf GitHub! (siehe .env.example)
-├── .env.example         # Vorlage für Umgebungsvariablen
+├── main.py              # FastAPI backend — reads Google Sheets, serves JSON
+├── requirements.txt     # Python dependencies
+├── Procfile             # Railway deployment configuration
+├── .env                 # 🔒 Never commit this! (see .env.example)
+├── .env.example         # Template for environment variables
 ├── .gitignore
 └── static/
-    └── index.html       # POP-Keys Dashboard Frontend
+    └── index.html       # POP-Keys dashboard frontend
 ```
 
 ---
 
 ## 🚀 Quickstart
 
-### 1. Repository klonen
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/DEIN-USERNAME/learning-os.git
+git clone https://github.com/JaninaHruby/learning-os.git
 cd learning-os
 ```
 
-### 2. Abhängigkeiten installieren
+### 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Google Sheet vorbereiten
+### 3. Prepare your Google Sheet
 
-Das Projekt nutzt Google Sheets als Datenbank. Du brauchst eine Google Tabelle mit zwei Tabs:
+This project uses Google Sheets as its database. You need a Google Spreadsheet with two tabs:
 
-**Tab 1: `Kurse`** mit diesen Spalten:
+**Tab 1: `Kurse`** with these columns:
 
 | Kursname | Anbieter | Abgeschlossen | Gesamt | Fortschritt % | Deadline | Aktueller Kurs | Priorität | Status | Notizen |
 |----------|----------|---------------|--------|---------------|----------|----------------|-----------|--------|---------|
 
-**Tab 2: `Unterkurse`** mit diesen Spalten:
+**Tab 2: `Unterkurse`** with these columns:
 
 | Kursname | Modul | Status |
 |----------|-------|--------|
 
-> 💡 Eine fertige Vorlage mit Beispieldaten und automatischen COUNTIF-Formeln liegt als `learning_os_data.xlsx` bereit — einfach in Google Sheets importieren und als Google Tabelle speichern.
+> 💡 A ready-made template with sample data and automatic COUNTIF formulas is available as `learning_os_data.xlsx` — simply import it into Google Sheets and save as a Google Spreadsheet.
 
-**Sheet öffentlich lesbar machen:**
-1. Oben rechts `Teilen` klicken
-2. `Allgemeiner Zugriff` → `Jeder im Internet mit diesem Link` → `Betrachter`
-3. Sheet ID aus der URL kopieren: `docs.google.com/spreadsheets/d/`**`DIESE_ID`**`/edit`
+**Make the sheet publicly readable:**
+1. Click `Share` in the top right
+2. Under `General access` → `Anyone with the link` → `Viewer`
+3. Copy the Sheet ID from the URL: `docs.google.com/spreadsheets/d/`**`THIS_ID`**`/edit`
 
-### 4. Umgebungsvariablen konfigurieren
+### 4. Configure environment variables
 
 ```bash
 cp .env.example .env
 ```
 
-`.env` öffnen und Sheet ID eintragen:
+Open `.env` and enter your Sheet ID:
 
 ```env
-SHEET_ID=deine_google_sheet_id_hier
+SHEET_ID=your_google_sheet_id_here
 ```
 
-### 5. Server starten
+### 5. Start the server
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Dashboard öffnen: **http://localhost:8000** 🎉
+Open the dashboard: **http://localhost:8000** 🎉
 
 ---
 
-## 📊 Google Sheets Logik
+## 📊 Google Sheets Logic
 
-Der Fortschritt wird **nie manuell eingetragen** — er berechnet sich automatisch:
+Progress is **never entered manually** — it calculates automatically:
 
 ```
-Tab "Unterkurse": Status eines Moduls → "✅ Abgeschlossen"
+Tab "Unterkurse": module status → "✅ Abgeschlossen"
                               ↓
-Tab "Kurse": COUNTIFS zählt abgeschlossene Module
+Tab "Kurse": COUNTIFS counts completed modules
                               ↓
-Fortschritt % = Abgeschlossen / Gesamt × 100
+Progress % = Completed / Total × 100
 ```
 
-**Mögliche Status-Werte in Unterkurse:**
-- `🔜 Offen` — noch nicht begonnen
-- `▶️ Aktiv` — aktuell in Bearbeitung
-- `✅ Abgeschlossen` — fertig
+**Possible status values in Unterkurse:**
+- `🔜 Offen` — not yet started
+- `▶️ Aktiv` — currently in progress
+- `✅ Abgeschlossen` — completed
 
 ---
 
-## ☁️ Deployment auf Railway (kostenlos)
+## ☁️ Deploy to Railway (free)
 
-1. [railway.app](https://railway.app) → `New Project` → `Deploy from GitHub`
-2. Repository auswählen
-3. Unter `Variables` die Umgebungsvariable eintragen:
+1. Go to [railway.app](https://railway.app) → `New Project` → `Deploy from GitHub`
+2. Select your repository
+3. Under `Variables` add the environment variable:
    ```
-   SHEET_ID = deine_sheet_id
+   SHEET_ID = your_sheet_id
    ```
-4. Railway erkennt den `Procfile` automatisch und startet den Server
-5. Unter `Settings` → `Domains` eine öffentliche URL generieren
+4. Railway automatically detects the `Procfile` and starts the server
+5. Under `Settings` → `Domains` generate a public URL
 
-Das Dashboard ist dann unter `https://deine-app.railway.app` auf **allen Geräten** erreichbar.
+Your dashboard will then be available at `https://your-app.railway.app` on **any device**.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Komponente | Technologie | Kosten |
-|------------|-------------|--------|
-| Backend | Python 3.13 + FastAPI | ✅ Kostenlos |
-| Datenbank | Google Sheets | ✅ Kostenlos |
-| Frontend | Vanilla HTML/CSS/JS | ✅ Kostenlos |
-| Hosting | Railway Free Tier | ✅ Kostenlos |
-| **Gesamt** | | **0 €/Monat** |
+| Component | Technology | Cost |
+|-----------|------------|------|
+| Backend | Python 3.13 + FastAPI | ✅ Free |
+| Database | Google Sheets | ✅ Free |
+| Frontend | Vanilla HTML/CSS/JS | ✅ Free |
+| Hosting | Railway Free Tier | ✅ Free |
+| **Total** | | **€0/month** |
 
 ---
 
-## 🔒 Sicherheit
+## 🔒 Security
 
-- Die `.env` Datei ist in `.gitignore` eingetragen und wird **nie** auf GitHub hochgeladen
-- Das Google Sheet wird nur **lesend** abgefragt — keine Schreibrechte nötig
-- Die Sheet ID ist kein Geheimnis, aber trotzdem besser in der `.env` aufbewahrt
+- The `.env` file is listed in `.gitignore` and is **never** uploaded to GitHub
+- Google Sheets is accessed **read-only** — no write permissions required
+- The Sheet ID is not a secret, but better kept in `.env` as best practice
 
 ---
 
@@ -175,18 +175,18 @@ Das Dashboard ist dann unter `https://deine-app.railway.app` auf **allen Geräte
 
 ```env
 # Google Sheet ID
-# Zu finden in der URL: docs.google.com/spreadsheets/d/HIER/edit
-SHEET_ID=deine_sheet_id_hier
+# Found in the URL: docs.google.com/spreadsheets/d/HERE/edit
+SHEET_ID=your_sheet_id_here
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Pull Requests sind willkommen! Für größere Änderungen bitte erst ein Issue öffnen.
+Pull requests are welcome! For major changes, please open an issue first.
 
 ---
 
 ## 📄 License
 
-MIT — mach damit was du willst 🎹
+MIT — do whatever you want with it 🎹
