@@ -1,6 +1,6 @@
 # 🎹 Learning OS — POP Keys Edition
 
-> A personal learning dashboard that tracks parallel certification programs, calculates progress automatically, and works on any device.
+> A personal learning dashboard that tracks parallel certification programs.
 > Built with the help of AI (Claude by Anthropic) as a learning project.
 
 ![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square&logo=python&logoColor=white)
